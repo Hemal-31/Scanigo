@@ -1,0 +1,141 @@
+/* ================= ENTER DETAILS PAGE ================= */
+
+.container {
+  width: 100%;
+  max-width: 440px;
+  margin: 20px auto;
+  padding: 24px 20px;
+  min-height: calc(100vh - 40px);
+  background-color: #0A1128;
+  color: #fff;
+  font-family: var(--font-family);
+  border-radius: var(--phone-radius);
+  border: var(--phone-border);
+  box-shadow: var(--phone-shadow);
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .container {
+    min-height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    margin: 0 auto;
+  }
+}
+
+/* TITLE */
+.container h1 {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* FORM GROUP */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: #a9a9a9;
+  margin-bottom: 6px;
+}
+
+/* INPUT */
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 15px;
+}
+
+.form-group input:focus {
+  outline: none;
+  background-color: #333;
+}
+
+/* ================= DROPDOWN STYLE ================= */
+
+.form-group select {
+  width: 100%;
+  padding: 14px 45px 14px 14px; /* space for arrow */
+  border-radius: 12px;
+  border: 1px solid #3b5a5c;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Wrapper for arrow */
+.form-group {
+  position: relative;
+}
+
+/* Custom arrow */
+.form-group select::after {
+  content: "";
+}
+
+/* Arrow using pseudo element only for select dropdowns */
+.form-group-select::after,
+.form-group:has(select)::after {
+  content: "▾";
+  position: absolute;
+  right: 18px;
+  top: 42px;
+  font-size: 16px;
+  color: #aaa;
+  pointer-events: none;
+}
+
+/* Focus & hover */
+.form-group select:hover {
+  border-color: #5b7c7d;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: #5b7c7d;
+  background-color: #333;
+}
+
+/* Option styling */
+.form-group select option {
+  background-color: #1a1a1a;
+  color: white;
+}
+
+/* ================= CONTINUE BUTTON ================= */
+
+.login-btn {
+  width: 100%;
+  padding: 16px;
+  margin-top: 10px;
+  background-color: #5b7c7d;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: #4a6a6b;
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

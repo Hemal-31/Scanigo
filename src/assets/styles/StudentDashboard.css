@@ -1,0 +1,358 @@
+/* ===================================================
+   STUDENT DASHBOARD - MODERN LIGHT UI
+   Tailored for College & IT Professionals Transit
+   =================================================== */
+
+.student-dashboard-shell {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-outer);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px;
+}
+
+.student-mobile-viewport {
+  width: 100%;
+  max-width: 440px;
+  height: calc(100vh - 40px);
+  min-height: 640px;
+  max-height: 900px;
+  background: #F3F5F9;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: var(--phone-radius);
+  border: var(--phone-border);
+  box-shadow: var(--phone-shadow);
+  overflow: hidden;
+}
+
+.student-map-tab-content {
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.student-scroll-container {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 16px 86px 16px;
+}
+
+/* Header & Top Bar */
+.student-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px 4px;
+}
+
+.student-brand-title {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.student-brand-title span {
+  color: var(--primary-blue);
+}
+
+.student-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.student-bell-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Card Container */
+.student-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Profile Card */
+.student-profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.student-avatar-lg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.student-hero-info {
+  flex: 1;
+}
+
+.student-hero-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.student-hero-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.student-quick-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.student-stat-box {
+  background: #F8FAFC;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #F1F5F9;
+}
+
+.student-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.student-stat-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* QR Code Section */
+.student-qr-card {
+  text-align: center;
+}
+
+.student-qr-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.student-qr-subtext {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.student-qr-box {
+  background: #F8FAFC;
+  border: 2px dashed #CBD5E1;
+  border-radius: 20px;
+  padding: 24px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.student-qr-meta {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-body);
+}
+
+/* Records & Attendance Section */
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.records-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.records-count-badge {
+  background: var(--primary-blue-light);
+  color: var(--primary-blue);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.record-item-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.15s ease;
+}
+
+.record-item-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.record-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.record-icon-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--success-green-light);
+  color: var(--success-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.record-details-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.record-details-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.record-status-pill {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.record-status-present {
+  background: var(--success-green-light);
+  color: #15803D;
+}
+
+.record-status-absent {
+  background: var(--danger-red-light);
+  color: #B91C1C;
+}
+
+/* Modern Bottom Navigation Bar */
+.student-bottom-navbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1500;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+@media (max-width: 480px) {
+  .student-dashboard-shell {
+    padding: 0;
+  }
+  .student-mobile-viewport {
+    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  .student-bottom-navbar {
+    position: fixed;
+    border-radius: 0;
+  }
+}
+
+.student-nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: #64748B;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.student-nav-tab.active {
+  color: var(--primary-blue);
+}
+
+.student-nav-tab.active .nav-icon {
+  transform: scale(1.15);
+}
+
+.nav-icon {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}

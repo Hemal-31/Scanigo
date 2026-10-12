@@ -1,0 +1,69 @@
+rules_version = '2';
+
+/**
+ * Scanigo Transit Network - Unified Cloud Firestore Security Rules
+ * 
+ * Standardized structure across collections:
+ * 1. Students    - Student profiles, department, bus allocation, QR codes
+ * 2. Drivers     - Driver profiles, assigned bus, route assignments
+ * 3. Admins      - Campus transit administration & fleet managers
+ * 4. LiveBus     - Real-time GPS coordinates, speed, heading & live status
+ * 5. Attendance  - Student transit boarding logs ({studentId}/records/{recordId})
+ * 6. ScanHistory - Real-time transit QR/RFID scan telemetry
+ */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // 1. Students Collection
+    // Read: Allowed for transit verification, QR checking, and dashboards
+    // Write: Allowed for student onboarding & profile updates
+    match /Students/{studentId} {
+      allow read, write: if true;
+    }
+
+    // 2. Drivers Collection
+    // Read: Public for students/admins tracking assigned driver info
+    // Write: Driver registration and profile configuration
+    match /Drivers/{driverId} {
+      allow read, write: if true;
+    }
+
+    // 3. Admins Collection
+    // Read & Write: Fleet administrators
+    match /Admins/{adminId} {
+      allow read, write: if true;
+    }
+
+    // 4. LiveBus Collection
+    // High-frequency telemetry written by active driver, read by all students & admin maps
+    match /LiveBus/{busId} {
+      allow read, write: if true;
+    }
+
+    // 5. Attendance Collection (with subcollections)
+    // Records student boarding events
+    match /Attendance/{studentId} {
+      allow read, write: if true;
+      
+      match /records/{recordId} {
+        allow read, write: if true;
+      }
+    }
+
+    // 6. ScanHistory Collection
+    // Aggregated real-time QR / RFID scan records for analytics
+    match /ScanHistory/{scanId} {
+      allow read, write: if true;
+    }
+  }
+}

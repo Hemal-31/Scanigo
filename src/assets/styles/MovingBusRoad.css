@@ -1,0 +1,96 @@
+/* ===================================================
+   MOVING BUS ROAD COMPONENT - ANIME.JS DRIVEN
+   Smooth 60FPS driving physics across the phone frame
+   =================================================== */
+
+.anime-transit-road-container {
+  width: 100%;
+  margin: 22px 0 8px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25), inset 0 2px 6px rgba(0, 0, 0, 0.5);
+  background: #0B1120;
+  border: 1.5px solid #1E293B;
+}
+
+/* Crisp Minimal Road Edge Borders */
+.anime-road-curb {
+  height: 3px;
+  width: 100%;
+  background: #334155;
+}
+
+.anime-road-curb.top-curb {
+  background: linear-gradient(90deg, #475569 0%, #64748B 50%, #475569 100%);
+}
+
+.anime-road-curb.bottom-curb {
+  background: linear-gradient(90deg, #334155 0%, #475569 50%, #334155 100%);
+}
+
+/* Dark Authentic Asphalt Road Surface */
+.anime-road-surface {
+  height: 68px;
+  width: 100%;
+  background: linear-gradient(180deg, #182234 0%, #0F172A 45%, #182234 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Center Dashed White Highway Lane Line */
+.anime-road-dashes {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 250%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    #F1F5F9 0px,
+    #F1F5F9 18px,
+    transparent 18px,
+    transparent 36px
+  );
+  opacity: 0.75;
+}
+
+/* Moving Bus Unit */
+.anime-moving-bus-unit {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Headlight Light Cone */
+.anime-headlight-cone {
+  position: absolute;
+  right: -36px;
+  top: 52%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 28px;
+  background: radial-gradient(ellipse at left, rgba(254, 240, 138, 0.75) 0%, rgba(254, 240, 138, 0) 80%);
+  filter: blur(1.5px);
+  pointer-events: none;
+}
+
+.anime-bus-chassis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.anime-bus-svg {
+  width: 96px;
+  height: 48px;
+  display: block;
+}

@@ -1,0 +1,357 @@
+/* ===================================================
+   SCANIGO - MODERN DESIGN SYSTEM & TOKENS
+   Pure Mobile-First Architecture (No fake phone frames)
+   =================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+:root {
+  /* Colors */
+  --bg-app: #F3F5F9;
+  --bg-outer: linear-gradient(145deg, #06112C 0%, #0A1E4A 35%, #102F75 75%, #1B459B 100%);
+  --bg-outer-solid: #0A1E4A;
+  --bg-card: #FFFFFF;
+  --bg-card-subtle: #F8FAFC;
+  --bg-input: #F1F5F9;
+  
+  /* Phone Frame Bezel & Royal Blue Complementary Glow */
+  --phone-border: 4px solid rgba(255, 255, 255, 0.25);
+  --phone-radius: 36px;
+  --phone-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.18), 0 0 35px rgba(59, 130, 246, 0.35);
+  
+  --primary-blue: #3B82F6;
+  --primary-blue-hover: #2563EB;
+  --primary-blue-light: #EFF6FF;
+  --primary-blue-glow: rgba(59, 130, 246, 0.25);
+
+  --success-green: #22C55E;
+  --success-green-hover: #16A34A;
+  --success-green-light: #DCFCE7;
+  --success-green-glow: rgba(34, 197, 94, 0.25);
+
+  --warning-amber: #F59E0B;
+  --warning-amber-light: #FEF3C7;
+
+  --danger-red: #EF4444;
+  --danger-red-hover: #DC2626;
+  --danger-red-light: #FEE2E2;
+
+  --text-main: #0F172A;
+  --text-body: #334155;
+  --text-muted: #64748B;
+  --text-placeholder: #94A3B8;
+
+  --border-light: #E2E8F0;
+  --border-focus: #3B82F6;
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: 'Outfit', 'Inter', -apple-system, sans-serif;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 10px 25px -5px rgba(15, 23, 42, 0.05), 0 8px 10px -6px rgba(15, 23, 42, 0.03);
+  --shadow-floating: 0 20px 35px -8px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-button: 0 8px 20px -4px rgba(59, 130, 246, 0.35);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-card: 22px;
+  --radius-pill: 9999px;
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--bg-outer);
+  background-attachment: fixed;
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+/* ================= MOBILE-FIRST SHELL ================= */
+.scanigo-app-shell {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-app);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.scanigo-mobile-frame {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Floating Card Component */
+.floating-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-floating);
+  padding: 18px 20px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Pill Button */
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 24px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  width: 100%;
+}
+
+.pill-btn:active {
+  transform: scale(0.98);
+}
+
+.pill-btn-blue {
+  background: var(--primary-blue);
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.4);
+}
+.pill-btn-blue:hover {
+  background: var(--primary-blue-hover);
+}
+
+.pill-btn-green {
+  background: var(--success-green);
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px -4px rgba(34, 197, 94, 0.35);
+}
+.pill-btn-green:hover {
+  background: var(--success-green-hover);
+}
+
+.pill-btn-red {
+  background: var(--danger-red);
+  color: #FFFFFF;
+  box-shadow: 0 8px 20px -4px rgba(239, 68, 68, 0.35);
+}
+.pill-btn-red:hover {
+  background: var(--danger-red-hover);
+}
+
+.pill-btn-outline {
+  background: #FFFFFF;
+  color: var(--text-main);
+  border: 1.5px solid var(--border-light);
+}
+.pill-btn-outline:hover {
+  background: var(--bg-card-subtle);
+}
+
+/* Status Badges */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-live {
+  background: var(--success-green-light);
+  color: #15803D;
+}
+.status-live::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success-green);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+  animation: pulse-live 1.5s infinite;
+}
+
+@keyframes pulse-live {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.status-present {
+  background: var(--success-green-light);
+  color: #15803D;
+}
+.status-absent {
+  background: var(--danger-red-light);
+  color: #B91C1C;
+}
+
+/* ================= FREE LEAFLET MAP STYLING ================= */
+/* Soft modern pastel styling matching uploaded transit UI */
+.leaflet-container {
+  font-family: var(--font-family) !important;
+}
+
+.leaflet-tile-pane {
+  filter: contrast(96%) brightness(102%) saturate(92%);
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+  background-color: #FFFFFF !important;
+  color: #0F172A !important;
+  font-weight: 700 !important;
+}
+
+/* ================= ANIMATED TRANSIT ROAD & MOVING BUS ================= */
+.transit-road-strip {
+  width: 100%;
+  margin: 22px 0 8px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  background: #1E293B;
+  border: 1px solid #334155;
+}
+
+.transit-road-curb {
+  height: 4px;
+  width: 100%;
+}
+.transit-road-curb.top-curb {
+  background: repeating-linear-gradient(
+    90deg,
+    #F59E0B 0px,
+    #F59E0B 16px,
+    #334155 16px,
+    #334155 32px
+  );
+}
+.transit-road-curb.bottom-curb {
+  background: repeating-linear-gradient(
+    90deg,
+    #38BDF8 0px,
+    #38BDF8 16px,
+    #334155 16px,
+    #334155 32px
+  );
+}
+
+.transit-road-surface {
+  height: 52px;
+  width: 100%;
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 50%, #1E293B 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Moving dashed lane stripes */
+.road-dash-line {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 200%;
+  height: 3px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    #FDE047 0px,
+    #FDE047 18px,
+    transparent 18px,
+    transparent 36px
+  );
+  animation: roadStripesMove 1.2s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes roadStripesMove {
+  0% {
+    transform: translateY(-50%) translateX(0);
+  }
+  100% {
+    transform: translateY(-50%) translateX(-36px);
+  }
+}
+
+/* Bus moving from left edge of phone frame to right edge */
+.road-moving-bus-unit {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  animation: busTravelAcross 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  z-index: 5;
+}
+
+.road-bus-sprite {
+  width: 58px;
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
+  animation: busSuspensionBounce 0.4s ease-in-out infinite alternate;
+}
+
+/* Yellow illuminated headlight beam projecting forward */
+.bus-headlight-glow {
+  position: absolute;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 18px;
+  background: radial-gradient(ellipse at left, rgba(254, 240, 138, 0.75) 0%, rgba(254, 240, 138, 0) 80%);
+  pointer-events: none;
+}
+
+@keyframes busTravelAcross {
+  0% {
+    transform: translateY(-50%) translateX(-70px);
+  }
+  100% {
+    transform: translateY(-50%) translateX(460px);
+  }
+}
+
+@keyframes busSuspensionBounce {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-2px);
+  }
+}
+
+

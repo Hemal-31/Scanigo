@@ -1,0 +1,96 @@
+/* ================= ENTER DETAILS PAGE - MODERN LIGHT UI ================= */
+
+.container {
+  width: 100%;
+  max-width: 440px;
+  margin: 20px auto;
+  padding: 30px 20px;
+  min-height: calc(100vh - 40px);
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  font-family: 'Inter', -apple-system, sans-serif;
+  border-radius: var(--phone-radius);
+  border: var(--phone-border);
+  box-shadow: var(--phone-shadow);
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .container {
+    min-height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    margin: 0 auto;
+  }
+}
+
+.container h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  border-color: var(--primary-blue);
+}
+
+.form-group select {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  font-size: 15px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group select:focus {
+  border-color: var(--primary-blue);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--primary-blue);
+  border: none;
+  border-radius: 9999px;
+  color: white;
+  margin-top: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px -4px rgba(59, 130, 246, 0.4);
+  transition: all 0.2s;
+}
+
+.login-btn:hover {
+  background: var(--primary-blue-hover);
+}

@@ -1,0 +1,123 @@
+/* ===================================================
+   ROLE SELECT - MODERN LIGHT UI
+   Clean cards matching the Scanigo Design System
+   =================================================== */
+
+.role-container {
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  min-height: calc(100vh - 40px);
+  width: 100%;
+  max-width: 440px;
+  margin: 20px auto;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-radius: var(--phone-radius);
+  border: var(--phone-border);
+  box-shadow: var(--phone-shadow);
+  overflow: hidden;
+}
+
+@media (max-width: 480px) {
+  .role-container {
+    min-height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    margin: 0 auto;
+  }
+}
+
+/* HEADER */
+.role-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.role-logo-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: var(--shadow-card);
+}
+
+.role-header h1 {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+/* MESSAGE */
+.role-message {
+  text-align: center;
+}
+
+.role-message h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.role-message p {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ROLE CARDS */
+.role-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.role-card {
+  background-color: var(--bg-card);
+  padding: 18px 20px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.role-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card);
+  border-color: var(--primary-blue);
+}
+
+.role-card-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.role-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* BOTTOM NAV */
+.role-bottom-nav {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+}

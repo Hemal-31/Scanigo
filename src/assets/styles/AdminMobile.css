@@ -1,0 +1,703 @@
+/* ===================================================
+   ADMIN MOBILE DASHBOARD UI
+   Exact Recreation of the 3-Screen Admin Design
+   =================================================== */
+
+.admin-mobile-shell {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--bg-outer);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px;
+}
+
+.admin-mobile-viewport {
+  width: 100%;
+  max-width: 440px;
+  height: calc(100vh - 40px);
+  min-height: 640px;
+  max-height: 900px;
+  background: #F3F5F9;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: var(--phone-radius);
+  border: var(--phone-border);
+  box-shadow: var(--phone-shadow);
+  padding-bottom: 74px; /* Space for bottom nav */
+  overflow: hidden;
+}
+
+/* ================= SCREEN 1: HOME OVERVIEW ================= */
+
+/* Hero Banner with Dark Navy Gradient */
+.admin-hero-banner {
+  background: linear-gradient(135deg, #0A192F 0%, #0F2A4A 45%, #1E3A8A 100%);
+  color: #FFFFFF;
+  padding: 20px 20px 28px;
+  border-bottom-left-radius: 28px;
+  border-bottom-right-radius: 28px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+}
+
+.admin-hero-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.admin-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-brand-icon {
+  font-size: 24px;
+}
+
+.admin-brand-name {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+
+.admin-brand-sub {
+  font-size: 11px;
+  color: #93C5FD;
+  letter-spacing: 0.2px;
+}
+
+.admin-profile-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 5px 12px 5px 6px;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-profile-pill:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.admin-avatar-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #3B82F6;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.admin-profile-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.admin-welcome-text h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+
+.admin-welcome-text p {
+  font-size: 13px;
+  color: #CBD5E1;
+  line-height: 1.4;
+}
+
+/* 2x2 Stat Cards Grid */
+.admin-stats-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 16px 16px 8px;
+  margin-top: -12px;
+  z-index: 10;
+}
+
+.admin-stat-card-clean {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-stat-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.admin-stat-icon-blue {
+  background: #EFF6FF;
+  color: #3B82F6;
+}
+
+.admin-stat-icon-green {
+  background: #ECFDF5;
+  color: #10B981;
+}
+
+.admin-stat-icon-red {
+  background: #FEF2F2;
+  color: #EF4444;
+}
+
+.admin-stat-number {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.admin-stat-label-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+  margin-bottom: 8px;
+}
+
+.admin-stat-sub-green {
+  font-size: 11px;
+  font-weight: 700;
+  color: #10B981;
+}
+
+.admin-stat-sub-muted {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94A3B8;
+}
+
+/* Live Tracking Card on Home Screen */
+.admin-live-map-card {
+  background: #FFFFFF;
+  border-radius: 22px;
+  margin: 8px 16px 16px;
+  padding: 16px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.admin-card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.admin-card-header-row h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.admin-view-all-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: #3B82F6;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-map-preview-frame {
+  width: 100%;
+  height: 200px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 12px;
+  border: 1px solid #E2E8F0;
+}
+
+.admin-map-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.admin-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-dot.green {
+  background: #10B981;
+}
+
+.legend-dot.red {
+  background: #EF4444;
+}
+
+.legend-dot.grey {
+  background: #94A3B8;
+}
+
+/* ================= SCREEN 2: BUSES LIST ================= */
+
+.admin-screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 8px;
+}
+
+.admin-back-btn {
+  border: none;
+  background: none;
+  font-size: 20px;
+  color: #0F172A;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.admin-screen-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.admin-search-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 14px;
+}
+
+.admin-pill-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 9999px;
+  padding: 10px 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.admin-pill-search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+  color: #0F172A;
+}
+
+.admin-pill-search input::placeholder {
+  color: #94A3B8;
+}
+
+.admin-filter-icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  color: #64748B;
+}
+
+/* Bus Cards in Screen 2 */
+.admin-buses-list-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 24px;
+}
+
+.admin-bus-item-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  position: relative;
+}
+
+.admin-bus-item-card:hover {
+  transform: translateY(-2px);
+  border-color: #3B82F6;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);
+}
+
+.admin-bus-thumb-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 14px;
+  background: #FFFBEB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid #FEF3C7;
+}
+
+.admin-bus-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.admin-bus-details-col {
+  flex: 1;
+}
+
+.admin-bus-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.admin-bus-code {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.admin-badge-onroute {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ECFDF5;
+  color: #059669;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 9999px;
+}
+
+.admin-badge-delayed {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #FEF2F2;
+  color: #DC2626;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 9999px;
+}
+
+.admin-badge-offline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #F1F5F9;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 9999px;
+}
+
+.admin-bus-route-text {
+  font-size: 13px;
+  color: #2563EB;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.admin-bus-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.admin-bus-chevron {
+  font-size: 18px;
+  color: #94A3B8;
+  padding-left: 4px;
+}
+
+/* ================= SCREEN 3: STUDENT RECORDS ================= */
+
+/* Tabs Row (All Students, Present, Absent) */
+.admin-segmented-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 8px 16px 12px;
+}
+
+.admin-tab-pill {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 9999px;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.admin-tab-pill.active {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #2563EB;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+}
+
+/* Student Record Items */
+.admin-students-list-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.admin-student-item-row {
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+  border: 1px solid #E2E8F0;
+}
+
+.admin-student-initial-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.admin-student-initial-circle.blue {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.admin-student-initial-circle.red {
+  background: #FEF2F2;
+  color: #EF4444;
+}
+
+.admin-student-info-col {
+  flex: 1;
+}
+
+.admin-student-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.admin-student-sub {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.admin-student-status-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.admin-status-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.admin-status-tag.present {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+.admin-status-tag.absent {
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+.admin-status-time {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.admin-menu-dots {
+  font-size: 16px;
+  color: #94A3B8;
+  cursor: pointer;
+  padding-left: 6px;
+}
+
+/* Download PDF Action Card at Bottom of Screen 3 */
+.admin-pdf-action-box {
+  padding: 16px 20px 24px;
+  text-align: center;
+  background: #F3F5F9;
+}
+
+.admin-download-pdf-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #2563EB;
+  color: #FFFFFF;
+  padding: 15px 24px;
+  border-radius: var(--radius-pill);
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.4);
+  transition: all 0.2s;
+}
+
+.admin-download-pdf-btn:hover {
+  background: #1D4ED8;
+  transform: translateY(-1px);
+}
+
+.admin-download-pdf-btn:active {
+  transform: scale(0.98);
+}
+
+.admin-pdf-caption {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+/* ================= MODERN BOTTOM NAVBAR ================= */
+.admin-bottom-navbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  background: #FFFFFF;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 1500;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+@media (max-width: 480px) {
+  .admin-mobile-shell {
+    padding: 0;
+  }
+  .admin-mobile-viewport {
+    min-height: 100vh;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  .admin-bottom-navbar {
+    position: fixed;
+    border-radius: 0;
+  }
+}
+
+.admin-nav-item-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.admin-nav-item-tab.active {
+  color: #2563EB;
+}
+
+.admin-nav-item-tab.active .admin-nav-tab-icon {
+  transform: scale(1.15);
+}
+
+.admin-nav-tab-icon {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.bus-marker-icon {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.28));
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
