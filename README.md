@@ -61,31 +61,40 @@
 ```mermaid
 graph TD
     subgraph Driver ["🚌 Driver Operator"]
-        D1[Driver Console] -->|Broadcasts GPS / Speed / Heading| FB_LiveBus[(Firestore: LiveBus)]
+        D1[Driver Console] -->|Broadcasts Real GPS + Heartbeat| FB_LiveBus[(Firestore: LiveBus)]
+        D1 -->|PageHide / Close Guard| FB_LiveBus
         D1 -->|Scans Student QR Code| FB_Attendance[(Firestore: Attendance)]
     end
 
     subgraph Firebase ["🔥 Firebase Realtime Engine"]
-        FB_LiveBus -->|Real-time Snapshot Listener| S1[Student Live Map]
-        FB_LiveBus -->|Real-time Snapshot Listener| A1[Admin Fleet View]
+        FB_LiveBus -->|Real-time Snapshot + 2-Min Staleness Check| S1[Student Live Map]
+        FB_LiveBus -->|Real-time Fleet Snapshot| A1[Admin Fleet View]
+        FB_LiveBus <-->|Direct REST Telemetry Sync| Backend[FastAPI Agentic Backend]
         FB_Attendance -->|Boarding History Sync| S2[Student Attendance Records]
         FB_Attendance -->|Telemetry Log & Audit| A2[Admin Analytics & PDF/Excel Export]
+        FB_Attendance <-->|Roster Ingestion| Backend
+    end
+
+    subgraph AI_Engine ["🤖 Agentic AI Service"]
+        Backend <-->|Context-Aware Multi-Step Reasoning| Gemini[Google Gemini 3.5 Flash]
     end
 
     subgraph Student ["🎓 Student Commuter"]
-        S1 -->|Renders Leaflet Map Marker| UI_Student[Live Bus View & Route Selector]
+        S1 -->|Renders Leaflet Map Marker / Comic Standby| UI_Student[Live Bus View & Route Selector]
         S2 -->|Generates Dynamic QR Token| QR_Student[Digital Boarding Pass]
     end
 
     subgraph Admin ["🛡️ Transit Administrator"]
         A1 --> UI_Admin[Fleet Overview & Active Buses]
         A2 --> Export[Export PDF / Excel Reports]
-        AI[AdminChatBot] -->|Queries Fleet & Student Roster| UI_Admin
+        UI_Admin <-->|4-Stage Thinking UI + Diagnostic Error Alerts| AI[AdminChatBot]
+        AI <-->|POST /api/chat| Backend
     end
 ```
 
 ### 1. 🎓 Student Experience
 - **Live Bus Tracking**: Renders Leaflet OpenStreetMap with custom bus markers, updating position dynamically as the driver moves.
+- **Real-World GPS Standby Mode**: If the driver closes the app or stops transmitting for $>2$ minutes, the map gracefully switches to an illustrated comic standby screen informing students that the bus is resting at depot.
 - **Route Switcher**: Seamlessly switch between campus routes (e.g., `V11`, `V14`, `V3`) to view alternate shuttles.
 - **Assigned Driver Card**: View the assigned driver's name, route status, and initiate direct calls in one click.
 - **Digital QR Boarding Pass**: Instant client-side QR token generation via `qrcode.react` and `html-to-image` for high-resolution pass downloads.
@@ -93,17 +102,25 @@ graph TD
 
 ### 2. 🚌 Driver Operations
 - **Live GPS Sharing**: Uses HTML5 Geolocation API (`navigator.geolocation.watchPosition`) to push high-frequency coordinates to `LiveBus/{busId}`.
+- **Mobile Lifecycle & Heartbeat Guard**: Automatically marks the bus offline via `pagehide`, `beforeunload`, and `fetch` with `keepalive: true` if the driver closes or backgrounds the app.
+- **GPS Loss Watchdog**: Automatically alerts driver and switches off live broadcasting if GPS satellite signals drop for $>90$ seconds.
 - **Simulation Mode**: Built-in route movement simulator allows testing and demonstrations without needing a moving vehicle.
 - **Camera-Based QR Scanner**: Uses `html5-qrcode` to scan student QR boarding passes directly from the device camera.
 - **Instant Check-in**: Validates student registration, stamps timestamp and bus ID, and logs attendance automatically.
 
-### 3. 🛡️ Admin Fleet Management
+### 3. 🛡️ Admin Fleet Management & Agentic AI Assistant
 - **Operational Metrics**: Displays live count of total campus buses, active routes, total boarding events, and attendance percentage.
-- **Live Fleet Map**: Multi-vehicle map visualizing every moving bus on campus simultaneously.
+- **Live Fleet Map**: Multi-vehicle map visualizing every moving bus on campus simultaneously with strict staleness filtering.
+- **FastAPI + Google Gemini Agentic AI** (`backend/main.py`):
+  - Ingests real-time Firestore collections (`LiveBus`, `Students`, `Drivers`, `ScanHistory`).
+  - Powered by `gemini-3.5-flash-lite` via the official `google-genai` SDK with automatic failovers.
+  - Answers complex questions like *"Which buses are currently moving?"*, *"Give me status of Bus V11"*, or *"Show absent passengers"*.
+- **Admin ChatBot UI** (`AdminChatBot.jsx`):
+  - **4-Stage Reasoning Animation**: Dynamic progress bar, pulsing radar icon, and real-time step trackers (`Connecting Gateway` $\to$ `Querying Firestore` $\to$ `Cross-referencing Manifests` $\to$ `Synthesizing with Gemini`).
+  - **Diagnostic Error Cards**: High-visibility error alert cards with one-click `🔄 Retry Question` button if network or gateway fails.
 - **Export Capabilities**:
   - 📊 **Excel**: Exports student attendance records to formatted `.xlsx` spreadsheets using `xlsx` (SheetJS).
   - 📄 **PDF**: Generates professional branded attendance reports with summary tables using `jspdf` and `jspdf-autotable`.
-- **Admin ChatBot Assistant**: In-dashboard intelligent assistant (`AdminChatBot.jsx`) capable of answering questions regarding fleet status, bus routes, driver assignments, and student rosters.
 
 ---
 
@@ -112,8 +129,9 @@ graph TD
 | Domain | Technologies |
 |:---|:---|
 | **Frontend Framework** | [React 18.2](https://react.dev/), [Vite 7.2](https://vite.dev/) |
+| **Backend & Agentic AI** | [FastAPI](https://fastapi.tiangolo.com/), [Google Gemini 3.5](https://aistudio.google.com/) (`google-genai` SDK), Python 3.10+ |
 | **Routing** | [React Router v6](https://reactrouter.com/) (`HashRouter` for zero-config static hosting) |
-| **Cloud & Backend** | [Firebase 12.7](https://firebase.google.com/) (Cloud Firestore Real-Time DB, Firebase Authentication) |
+| **Cloud & Database** | [Firebase 12.7](https://firebase.google.com/) (Cloud Firestore Real-Time DB, Firebase Authentication) |
 | **Mapping & Geospatial** | [Leaflet 1.9](https://leafletjs.com/), [React-Leaflet 4.2](https://react-leaflet.js.org/), OpenStreetMap / CartoDB Voyager Tiles |
 | **QR & Computer Vision** | [html5-qrcode 2.3](https://github.com/mebjas/html5-qrcode), [qrcode.react 4.2](https://github.com/zpao/qrcode.react) |
 | **Export Engines** | [jsPDF 4.2](https://github.com/parallax/jsPDF), [jspdf-autotable 5.0](https://github.com/simonbengtsson/jsPDF-AutoTable), [xlsx 0.18](https://github.com/SheetJS/sheetjs) |
@@ -167,6 +185,7 @@ Scanigo/
 ### 1. Prerequisites
 - [Node.js](https://nodejs.org/) (Version **18.0.0** or higher recommended)
 - `npm` (Version **9.0.0** or higher)
+- [Python 3.10+](https://www.python.org/) (Optional, for running the FastAPI + Gemini Agentic AI backend)
 
 ### 2. Clone the Repository
 ```bash
@@ -179,24 +198,20 @@ cd Scanigo
 npm install
 ```
 
-### 4. Firebase Configuration
-The project is configured out-of-the-box in `src/config/firebase.js`. If you wish to connect your own Firebase project:
-1. Go to the [Firebase Console](https://console.firebase.google.com/) and create a project.
-2. Enable **Authentication** (Email/Password and Google Provider).
-3. Create a **Cloud Firestore** database.
-4. Replace the credentials in `src/config/firebase.js`:
-```javascript
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+### 4. (Optional) Start the Gemini Agentic AI Backend
+To enable the AI Assistant in the Admin Dashboard:
+```bash
+cd backend
+pip install -r requirements.txt
+cp .env.example .env
+# Open backend/.env and paste your free Google Gemini API Key:
+# GEMINI_API_KEY=your_key_here
+./start.sh
 ```
+The backend server runs on `http://localhost:8000` with Swagger docs at `http://localhost:8000/docs`.
 
-### 5. Start the Development Server
+### 5. Start the Frontend Development Server
+In the project root directory:
 ```bash
 npm run dev
 ```

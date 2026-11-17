@@ -319,6 +319,37 @@ export default function DriverDashboard() {
   }, [activeTab, driver, handleScan]);
 
   /* ---------------- GPS LIVE LOCATION SHARING ---------------- */
+  const gpsWatchdogTimerRef = useRef(null);
+
+  const markBusOfflineImmediately = useCallback((busNo) => {
+    if (!busNo) return;
+    try {
+      setDoc(
+        doc(db, "LiveBus", busNo),
+        { live: false, status: "Stopped", updatedAt: serverTimestamp() },
+        { merge: true }
+      ).catch(() => {});
+
+      // Use keepalive fetch for guaranteed dispatch even when tab/browser is closed
+      const url = `https://firestore.googleapis.com/v1/projects/scanigo-a9302/databases/(default)/documents/LiveBus/${busNo}?updateMask.fieldPaths=live&updateMask.fieldPaths=status&updateMask.fieldPaths=updatedAt`;
+      const body = JSON.stringify({
+        fields: {
+          live: { booleanValue: false },
+          status: { stringValue: "Stopped" },
+          updatedAt: { timestampValue: new Date().toISOString() }
+        }
+      });
+      fetch(url, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body,
+        keepalive: true
+      }).catch(() => {});
+    } catch {
+      // Ignored
+    }
+  }, []);
+
   const startLive = () => {
     if (!driver) {
       alert("Driver data not ready");
@@ -331,6 +362,16 @@ export default function DriverDashboard() {
 
     setLiveOn(true);
     setActiveTab("navigation");
+
+    // Watchdog to auto-stop if device stops sending GPS (e.g. backgrounded or signal lost)
+    if (gpsWatchdogTimerRef.current) clearInterval(gpsWatchdogTimerRef.current);
+    gpsWatchdogTimerRef.current = setInterval(() => {
+      const timeSinceLastGps = Date.now() - lastUpdateRef.current;
+      if (lastUpdateRef.current > 0 && timeSinceLastGps > 90000) {
+        console.warn("[Driver GPS] Watchdog detected stale GPS (>90s). Marking offline.");
+        stopLive();
+      }
+    }, 15000);
 
     watchIdRef.current = navigator.geolocation.watchPosition(
       async (pos) => {
@@ -367,11 +408,12 @@ export default function DriverDashboard() {
       },
       (err) => {
         console.warn("GPS error:", err);
-        alert("GPS unavailable or permission denied. Starting route simulation mode.");
+        markBusOfflineImmediately(driver.busNo);
         setLiveOn(false);
+        alert("GPS unavailable or permission denied. Bus has been marked offline. Starting route simulation mode.");
         startSimulation();
       },
-      { enableHighAccuracy: true, maximumAge: 0 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
     );
   };
 
@@ -380,19 +422,15 @@ export default function DriverDashboard() {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
     }
+    if (gpsWatchdogTimerRef.current) {
+      clearInterval(gpsWatchdogTimerRef.current);
+      gpsWatchdogTimerRef.current = null;
+    }
 
     stopSimulation();
 
     if (driver) {
-      try {
-        await setDoc(
-          doc(db, "LiveBus", driver.busNo),
-          { live: false, status: "Stopped", updatedAt: serverTimestamp() },
-          { merge: true }
-        );
-      } catch (err) {
-        console.error("Stop live error:", err);
-      }
+      markBusOfflineImmediately(driver.busNo);
     }
 
     setLiveOn(false);
@@ -523,18 +561,25 @@ export default function DriverDashboard() {
   }, [liveOn]);
 
   useEffect(() => {
-    return () => {
-      if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
-      if (simulationTimerRef.current) clearInterval(simulationTimerRef.current);
+    const handleUnloadOrBackground = () => {
       if (driverRef.current?.busNo && liveOnRef.current) {
-        setDoc(
-          doc(db, "LiveBus", driverRef.current.busNo),
-          { live: false, status: "Stopped", updatedAt: serverTimestamp() },
-          { merge: true }
-        ).catch(() => {});
+        markBusOfflineImmediately(driverRef.current.busNo);
       }
     };
-  }, []);
+
+    // Auto-mark offline when driver closes tab, navigates away, or locks device
+    window.addEventListener("pagehide", handleUnloadOrBackground);
+    window.addEventListener("beforeunload", handleUnloadOrBackground);
+
+    return () => {
+      window.removeEventListener("pagehide", handleUnloadOrBackground);
+      window.removeEventListener("beforeunload", handleUnloadOrBackground);
+      if (watchIdRef.current) navigator.geolocation.clearWatch(watchIdRef.current);
+      if (simulationTimerRef.current) clearInterval(simulationTimerRef.current);
+      if (gpsWatchdogTimerRef.current) clearInterval(gpsWatchdogTimerRef.current);
+      handleUnloadOrBackground();
+    };
+  }, [markBusOfflineImmediately]);
 
   return (
     <div className="driver-dashboard-shell">

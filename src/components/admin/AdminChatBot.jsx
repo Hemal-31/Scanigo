@@ -2,16 +2,69 @@ import React, { useState, useEffect, useRef } from "react";
 import "../../assets/styles/AdminChatBot.css";
 
 /**
- * AGENTIC AI MODEL HANDLER (CUSTOMIZABLE)
+ * AGENTIC AI MODEL HANDLER
  * -------------------------------------------------------------
- * You can update this function to connect to your custom LLM backend
- * (e.g., Google Gemini 2.5/Flash, OpenAI, Claude, or a custom Flask/Node API).
+ * Connects directly to the ScaniGo Python Gemini Agentic RAG Backend
+ * (http://localhost:8000/api/chat).
  * 
- * By default, this engine processes live Firestore fleet & attendance 
- * context in real-time to answer admin queries with high precision.
+ * If the backend is running, it harnesses Google Gemini + live Firestore
+ * telemetry with multi-step reasoning.
+ * If the backend is offline, it seamlessly falls back to the client-side
+ * Firestore fleet state so the admin console never goes down.
  */
+const BACKEND_API_URL = "http://localhost:8000/api/chat";
+
+const AGENT_STAGES = [
+  { id: 0, text: "Connecting to ScaniGo Fleet Gateway...", icon: "⚡" },
+  { id: 1, text: "Querying live Firestore telemetry & GPS...", icon: "📡" },
+  { id: 2, text: "Cross-referencing manifests & attendance...", icon: "🔍" },
+  { id: 3, text: "Synthesizing fleet intelligence with Gemini AI...", icon: "✨" },
+];
+
 async function callAgenticAIModel({ prompt, messages, buses = [], students = [] }) {
-  // Simulate network thinking latency for realistic agentic feel
+  // 1. Try querying the Gemini Agentic RAG backend
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+    const historyPayload = messages.slice(-6).map((m) => ({
+      role: m.sender === "user" ? "user" : "model",
+      text: m.text,
+    }));
+
+    const response = await fetch(BACKEND_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: prompt,
+        history: historyPayload,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.reply) {
+        return {
+          reply: data.reply,
+          source: data.source || "gemini_rag_firestore",
+          model: data.model || "gemini-3.5-flash-lite",
+          badge: "✨ Gemini 3.5 Flash • Live Sync"
+        };
+      }
+    } else {
+      const errorText = await response.text();
+      console.warn("[AdminChatBot] Backend responded with error:", response.status, errorText);
+    }
+  } catch (err) {
+    console.info("[AdminChatBot] Backend not reachable, falling back to client-side Firestore state:", err);
+  }
+
+  // 2. Client-side Real-Time Fallback Engine
   await new Promise((resolve) => setTimeout(resolve, 600));
 
   const lower = prompt.toLowerCase().trim();
@@ -26,6 +79,8 @@ async function callAgenticAIModel({ prompt, messages, buses = [], students = [] 
     ? Math.round((presentStudents.length / totalStudents) * 100) 
     : 0;
 
+  let replyText = "";
+
   // 1. Bus status / location query
   const busMatch = lower.match(/bus\s*([a-z0-9]+)/i);
   if (busMatch) {
@@ -38,7 +93,7 @@ async function callAgenticAIModel({ prompt, messages, buses = [], students = [] 
       const busPresent = busStudents.filter((s) => s.status === "Present").length;
       const busAbsent = busStudents.filter((s) => s.status !== "Present").length;
 
-      return `🚍 **Bus ${foundBus.id} Status Report:**
+      replyText = `🚍 **Bus ${foundBus.id} Status Report:**
 • **Operational Status:** ${foundBus.isLive ? "🟢 On Route (Live GPS)" : "⚪ " + foundBus.status}
 • **Assigned Route:** ${foundBus.route || "Campus Transit Corridor"}
 • **Current Location:** ${foundBus.location || "Depot"}
@@ -49,31 +104,33 @@ async function callAgenticAIModel({ prompt, messages, buses = [], students = [] 
   }
 
   // 2. Active buses list
-  if (lower.includes("active bus") || lower.includes("which bus") || lower.includes("moving") || lower.includes("buses")) {
+  if (!replyText && (lower.includes("active bus") || lower.includes("which bus") || lower.includes("moving") || lower.includes("buses"))) {
     if (activeBuses.length === 0) {
-      return `📡 **Active Fleet Overview:**
+      replyText = `📡 **Active Fleet Overview:**
 Currently, **0 out of ${totalBuses}** buses are broadcasting live coordinates.
 All fleet buses (${buses.map((b) => b.id).join(", ")}) are currently resting at the Campus Depot.`;
-    }
-    return `📡 **Active Fleet Overview (${activeBuses.length}/${totalBuses} On Route):**
+    } else {
+      replyText = `📡 **Active Fleet Overview (${activeBuses.length}/${totalBuses} On Route):**
 ${activeBuses.map((b) => `• **Bus ${b.id}** — 🟢 *${b.status}* | Speed: ${b.speed} | Loc: ${b.location} | Driver: ${b.driver}`).join("\n")}`;
+    }
   }
 
   // 3. Absent students query
-  if (lower.includes("absent") || lower.includes("missing")) {
+  if (!replyText && (lower.includes("absent") || lower.includes("missing"))) {
     if (absentStudents.length === 0) {
-      return `🎉 **Attendance Update:**
+      replyText = `🎉 **Attendance Update:**
 All **${totalStudents}** registered students are marked **Present** on their respective buses!`;
-    }
-    const sampleAbsent = absentStudents.slice(0, 8);
-    return `⚠️ **Absent Passengers (${absentStudents.length} Students):**
+    } else {
+      const sampleAbsent = absentStudents.slice(0, 8);
+      replyText = `⚠️ **Absent Passengers (${absentStudents.length} Students):**
 ${sampleAbsent.map((s) => `• **${s.name}** (${s.regNo || s.id}) — Bus ${s.busNo} • ${s.classGrade}`).join("\n")}
 ${absentStudents.length > 8 ? `\n*...and ${absentStudents.length - 8} more students. View full list in the Attendance tab.*` : ""}`;
+    }
   }
 
   // 4. Attendance / Present overview
-  if (lower.includes("attendance") || lower.includes("present") || lower.includes("scan") || lower.includes("stats") || lower.includes("summary")) {
-    return `📊 **Campus Transit Attendance Intelligence:**
+  if (!replyText && (lower.includes("attendance") || lower.includes("present") || lower.includes("scan") || lower.includes("stats") || lower.includes("summary"))) {
+    replyText = `📊 **Campus Transit Attendance Intelligence:**
 • **Total Enrolled Passengers:** ${totalStudents} students
 • **Present (Scanned):** ${presentStudents.length} students (${attendanceRate}%)
 • **Absent / Pending:** ${absentStudents.length} students
@@ -83,17 +140,18 @@ ${absentStudents.length > 8 ? `\n*...and ${absentStudents.length - 8} more stude
   }
 
   // 5. Driver / Contact query
-  if (lower.includes("driver") || lower.includes("phone") || lower.includes("call") || lower.includes("contact")) {
+  if (!replyText && (lower.includes("driver") || lower.includes("phone") || lower.includes("call") || lower.includes("contact"))) {
     const driversList = buses
       .filter((b) => b.driver)
       .map((b) => `• **Bus ${b.id}:** ${b.driver} ${b.phone ? `(📞 ${b.phone})` : ""}`)
       .join("\n");
-    return `👨‍✈️ **Assigned Bus Drivers:**
+    replyText = `👨‍✈️ **Assigned Bus Drivers:**
 ${driversList || "No drivers assigned yet."}`;
   }
 
   // 6. Generic intelligent fallback
-  return `🤖 **ScaniGo Fleet AI:**
+  if (!replyText) {
+    replyText = `🤖 **ScaniGo Fleet AI:**
 I analyzed the live transit system. Here is what I know:
 • **Active Buses:** ${activeBuses.length} of ${totalBuses} on route
 • **Today's Attendance:** ${presentStudents.length}/${totalStudents} students scanned (${attendanceRate}%)
@@ -103,6 +161,14 @@ You can ask me questions like:
 2. *"Give me status of Bus V11"*
 3. *"Show absent students list"*
 4. *"Who is the driver of Bus V14?"*`;
+  }
+
+  return {
+    reply: replyText,
+    source: "local_firestore_cache",
+    model: "client-telemetry-engine",
+    badge: "📡 Local Firestore Synchronized"
+  };
 }
 
 export default function AdminChatBot({ buses = [], students = [] }) {
@@ -116,6 +182,8 @@ export default function AdminChatBot({ buses = [], students = [] }) {
   ]);
   const [inputPrompt, setInputPrompt] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [thinkingStep, setThinkingStep] = useState(0);
+  const thinkingTimersRef = useRef([]);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -124,7 +192,13 @@ export default function AdminChatBot({ buses = [], students = [] }) {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isTyping, thinkingStep]);
+
+  useEffect(() => {
+    return () => {
+      thinkingTimersRef.current.forEach(clearTimeout);
+    };
+  }, []);
 
   const handleSend = async (customPrompt) => {
     const queryText = (typeof customPrompt === "string" ? customPrompt : inputPrompt).trim();
@@ -140,9 +214,18 @@ export default function AdminChatBot({ buses = [], students = [] }) {
     setMessages((prev) => [...prev, userMessage]);
     setInputPrompt("");
     setIsTyping(true);
+    setThinkingStep(0);
+
+    // Staged Agentic Thinking Animation Timers
+    thinkingTimersRef.current.forEach(clearTimeout);
+    thinkingTimersRef.current = [
+      setTimeout(() => setThinkingStep(1), 750),
+      setTimeout(() => setThinkingStep(2), 2100),
+      setTimeout(() => setThinkingStep(3), 3600),
+    ];
 
     try {
-      const aiReplyText = await callAgenticAIModel({
+      const aiResult = await callAgenticAIModel({
         prompt: queryText,
         messages: [...messages, userMessage],
         buses,
@@ -152,7 +235,8 @@ export default function AdminChatBot({ buses = [], students = [] }) {
       const aiMessage = {
         id: "ai_" + Date.now(),
         sender: "ai",
-        text: aiReplyText,
+        text: aiResult.reply || aiResult,
+        badge: aiResult.badge || "✨ Fleet Agent AI",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
 
@@ -164,11 +248,15 @@ export default function AdminChatBot({ buses = [], students = [] }) {
         {
           id: "err_" + Date.now(),
           sender: "ai",
-          text: "⚠️ Sorry, I encountered an issue while querying the fleet engine. Please try again.",
+          isError: true,
+          errorTitle: "Fleet Gateway Communication Issue",
+          errorMessage: err.message || "Could not complete query through transit engine. Please check backend status.",
+          failedPrompt: queryText,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
     } finally {
+      thinkingTimersRef.current.forEach(clearTimeout);
       setIsTyping(false);
     }
   };
@@ -258,20 +346,79 @@ export default function AdminChatBot({ buses = [], students = [] }) {
             className={`admin-chat-row ${m.sender === "user" ? "user-row" : "ai-row"}`}
           >
             {m.sender === "ai" && <div className="admin-bubble-avatar">🤖</div>}
-            <div className={`admin-chat-bubble ${m.sender === "user" ? "user-bubble" : "ai-bubble"}`}>
-              <div className="admin-bubble-text">{formatText(m.text)}</div>
-              <div className="admin-bubble-time">{m.timestamp}</div>
-            </div>
+            
+            {m.isError ? (
+              <div className="admin-chat-bubble ai-bubble admin-error-card">
+                <div className="admin-error-header">
+                  <div className="admin-error-title-row">
+                    <span>⚠️</span>
+                    <span>{m.errorTitle || "Fleet Engine Alert"}</span>
+                  </div>
+                  <span className="admin-error-badge">Diagnostic</span>
+                </div>
+                <div className="admin-error-body">
+                  {m.errorMessage}
+                </div>
+                {m.failedPrompt && (
+                  <div className="admin-error-actions">
+                    <button
+                      type="button"
+                      className="admin-error-retry-btn"
+                      onClick={() => handleSend(m.failedPrompt)}
+                    >
+                      <span>🔄 Retry Question</span>
+                    </button>
+                  </div>
+                )}
+                <div className="admin-bubble-time">{m.timestamp}</div>
+              </div>
+            ) : (
+              <div className={`admin-chat-bubble ${m.sender === "user" ? "user-bubble" : "ai-bubble"}`}>
+                <div className="admin-bubble-text">{formatText(m.text)}</div>
+                {m.badge && <div className="admin-source-badge">{m.badge}</div>}
+                <div className="admin-bubble-time">{m.timestamp}</div>
+              </div>
+            )}
           </div>
         ))}
 
         {isTyping && (
           <div className="admin-chat-row ai-row">
             <div className="admin-bubble-avatar">🤖</div>
-            <div className="admin-chat-bubble ai-bubble admin-typing-bubble">
-              <span className="admin-typing-dot"></span>
-              <span className="admin-typing-dot"></span>
-              <span className="admin-typing-dot"></span>
+            <div className="admin-agent-thinking-card">
+              <div className="admin-thinking-header">
+                <div className="admin-thinking-title-group">
+                  <span className="admin-thinking-radar"></span>
+                  <span className="admin-thinking-title">Fleet Agent Reasoning...</span>
+                </div>
+                <span className="admin-thinking-step-badge">
+                  Step {thinkingStep + 1} of 4
+                </span>
+              </div>
+
+              <div className="admin-thinking-progress-track">
+                <div
+                  className="admin-thinking-progress-bar"
+                  style={{ width: `${((thinkingStep + 1) / 4) * 100}%` }}
+                />
+              </div>
+
+              <div className="admin-thinking-steps-list">
+                {AGENT_STAGES.map((stg, sIdx) => {
+                  const isDone = sIdx < thinkingStep;
+                  const isActive = sIdx === thinkingStep;
+                  const statusClass = isDone ? "completed" : isActive ? "active" : "pending";
+
+                  return (
+                    <div key={stg.id} className={`admin-thinking-step-row ${statusClass}`}>
+                      <span className="admin-step-icon">
+                        {isDone ? "✓" : isActive ? "⚡" : "○"}
+                      </span>
+                      <span>{stg.text}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}

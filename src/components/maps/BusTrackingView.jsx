@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { db } from "../../config/firebase";
 import { doc, onSnapshot, getDoc } from "firebase/firestore";
 import { addStyledTileLayer } from "../../utils/mapTiles";
+import { isBusTelemetryLive } from "../../services/firestoreService";
 import "../../assets/styles/BusTrackingView.css";
 
 // Helper to ensure valid driver photos or fallback to a nice avatar
@@ -31,7 +32,6 @@ export default function BusTrackingView({
   driverName = "",
   driverPhone = "",
   driverPhoto = "",
-  studentId = "",
 }) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -97,15 +97,9 @@ export default function BusTrackingView({
           setCurrentDriverPhoto(validPhoto);
         }
 
-        // STRICT CONDITION: Only if the driver explicitly turns on location
-        // data.live must be true and coordinates must be valid
-        const isDriverSharingLocation = Boolean(
-          data.live === true &&
-          typeof data.lat === "number" &&
-          typeof data.lng === "number" &&
-          !isNaN(data.lat) &&
-          !isNaN(data.lng)
-        );
+        // STRICT CONDITION: Only if the driver is genuinely transmitting live GPS
+        // (Must be live: true, valid coordinates, and updated within the last 2 minutes)
+        const isDriverSharingLocation = isBusTelemetryLive(data);
 
         if (isDriverSharingLocation) {
           setLiveData(data);
@@ -114,7 +108,7 @@ export default function BusTrackingView({
         }
       }
       
-      // Driver has not turned on location or doc has live: false
+      // Driver has not turned on location, doc has live: false, or GPS ping is stale (>2m)
       setLiveData(null);
       setIsLive(false);
     }, (err) => {
@@ -125,6 +119,18 @@ export default function BusTrackingView({
 
     return () => unsub();
   }, [currentBusNo, currentDriverName]);
+
+  // Periodic heartbeat watchdog: If driver loses signal or phone locks, auto-transition to offline
+  useEffect(() => {
+    if (!isLive || !liveData) return;
+    const interval = setInterval(() => {
+      if (!isBusTelemetryLive(liveData)) {
+        setIsLive(false);
+        setLiveData(null);
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [isLive, liveData]);
 
   // Helper: Smoothly glide Leaflet marker from current position to targetPos
   const smoothMoveMarker = useCallback((marker, targetPos, durationMs = 1200, map = null) => {
@@ -285,7 +291,7 @@ export default function BusTrackingView({
       setLastCheckedTime(new Date());
       if (snap.exists()) {
         const data = snap.data();
-        if (data.live === true && typeof data.lat === "number" && typeof data.lng === "number") {
+        if (isBusTelemetryLive(data)) {
           setLiveData(data);
           setIsLive(true);
         } else {

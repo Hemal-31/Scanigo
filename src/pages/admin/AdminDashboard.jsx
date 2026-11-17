@@ -10,6 +10,7 @@ import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { addStyledTileLayer } from "../../utils/mapTiles";
 import { deleteCookie } from "../../utils/cookieUtils";
+import { isBusTelemetryLive } from "../../services/firestoreService";
 import AdminChatBot from "../../components/admin/AdminChatBot";
 import "../../assets/styles/AdminMobile.css";
 
@@ -111,14 +112,14 @@ export default function AdminDashboard() {
         snap.docs.forEach((d) => {
           const data = d.data();
           const busId = d.id;
-          const isLiveNow = data.live === true && typeof data.lat === "number" && typeof data.lng === "number";
+          const isLiveNow = isBusTelemetryLive(data);
           liveMap[busId] = {
             id: busId,
             busNo: busId,
-            status: isLiveNow ? "On Route" : (data.status || "Offline"),
+            status: isLiveNow ? "On Route" : (data.status === "Moving" ? "Offline (GPS Stale)" : (data.status || "Offline")),
             route: data.route || "Campus Transit Corridor",
             location: data.location || (isLiveNow ? "Broadcasting Real GPS" : "Depot"),
-            speed: data.speed ? `${data.speed} km/h` : (isLiveNow ? "32 km/h" : "0 km/h"),
+            speed: isLiveNow && data.speed ? `${data.speed} km/h` : "0 km/h",
             lat: data.lat || 12.975,
             lng: data.lng || 80.215,
             driver: data.driverName || data.driver || "Driver",
@@ -153,7 +154,6 @@ export default function AdminDashboard() {
 
   // 2. Sync Real Student Attendance Records from Firestore (ScanHistory & Students)
   useEffect(() => {
-    setLoadingRecords(true);
     let scanRecords = [];
     let registeredStudents = [];
 
@@ -244,7 +244,9 @@ export default function AdminDashboard() {
     if (instanceRef.current) {
       try {
         instanceRef.current.remove();
-      } catch (e) {}
+      } catch {
+        // Ignored
+      }
       instanceRef.current = null;
     }
     if (containerElement._leaflet_id) {

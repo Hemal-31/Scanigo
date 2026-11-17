@@ -37,6 +37,42 @@ export const COLLECTIONS = {
   SCAN_HISTORY: "ScanHistory",
 };
 
+// Maximum age in milliseconds before a broadcasted GPS location is considered stale / offline
+export const MAX_LIVE_STALENESS_MS = 120000; // 2 minutes (120 seconds)
+
+/**
+ * Safely parse any Firestore timestamp representation to epoch milliseconds
+ */
+export function parseFirestoreTimestamp(ts) {
+  if (!ts) return null;
+  if (typeof ts.toDate === "function") return ts.toDate().getTime();
+  if (typeof ts.toMillis === "function") return ts.toMillis();
+  if (typeof ts.seconds === "number") return ts.seconds * 1000;
+  if (typeof ts === "string") {
+    const parsed = new Date(ts).getTime();
+    return isNaN(parsed) ? null : parsed;
+  }
+  if (typeof ts === "number") return ts;
+  return null;
+}
+
+/**
+ * Strict real-world evaluation of whether a bus is truly transmitting live GPS
+ * Prevents phantom "live" buses when driver closed app days or weeks ago.
+ */
+export function isBusTelemetryLive(data, maxStalenessMs = MAX_LIVE_STALENESS_MS) {
+  if (!data) return false;
+  if (data.live !== true) return false;
+  if (typeof data.lat !== "number" || typeof data.lng !== "number") return false;
+  if (isNaN(data.lat) || isNaN(data.lng)) return false;
+
+  const timeMs = parseFirestoreTimestamp(data.updatedAt);
+  if (!timeMs) return false; // Stale or missing timestamp is treated as offline
+
+  const ageMs = Date.now() - timeMs;
+  return ageMs >= 0 && ageMs < maxStalenessMs;
+}
+
 // ==========================================
 // 2. STRUCTURED DOCUMENT FORMATTERS
 // ==========================================
